@@ -1,0 +1,849 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/images/favicon.io">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Garland Qian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前端优化大概可以有以下几个方向：  网络优化 页面渲染优化 JS优化 图片优化 webpack打包优化 Vue和React优化 数据埋点及性能监控  网络优化DNS预解析link标签的rel属性设置dns-prefetch，提前获取域名对应的IP地址 使用缓存减轻服务端压力，快速得到数据(强缓存和协商缓存)(juejin.cn&#x2F;post&#x2F;717878…)) 使用 CDN（内容分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="性能优化">
+<meta property="og:url" content="https://garlandqian.github.io/2024/09/24/Interview/js/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="Garland Qian Blog">
+<meta property="og:description" content="前端优化大概可以有以下几个方向：  网络优化 页面渲染优化 JS优化 图片优化 webpack打包优化 Vue和React优化 数据埋点及性能监控  网络优化DNS预解析link标签的rel属性设置dns-prefetch，提前获取域名对应的IP地址 使用缓存减轻服务端压力，快速得到数据(强缓存和协商缓存)(juejin.cn&#x2F;post&#x2F;717878…)) 使用 CDN（内容分">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-24T08:39:07.000Z">
+<meta property="article:modified_time" content="2025-01-05T07:47:27.235Z">
+<meta property="article:author" content="Garland Qian">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>性能优化 - Garland Qian Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"garlandqian.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>GarlandQian&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="性能优化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-24 16:39" pubdate>
+          2024年9月24日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">性能优化</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>前端优化大概可以有以下几个方向：</p>
+<ul>
+<li>网络优化</li>
+<li>页面渲染优化</li>
+<li>JS优化</li>
+<li>图片优化</li>
+<li>webpack打包优化</li>
+<li>Vue和React优化</li>
+<li>数据埋点及性能监控</li>
+</ul>
+<h1 id="网络优化"><a href="#网络优化" class="headerlink" title="网络优化"></a>网络优化</h1><h2 id="DNS预解析"><a href="#DNS预解析" class="headerlink" title="DNS预解析"></a>DNS预解析</h2><p>link标签的rel属性设置dns-prefetch，提前获取域名对应的IP地址</p>
+<h2 id="使用缓存"><a href="#使用缓存" class="headerlink" title="使用缓存"></a>使用缓存</h2><p>减轻服务端压力，快速得到数据(强缓存和协商缓存)(<a target="_blank" rel="noopener" href="https://juejin.cn/post/7178783712363708475#heading-27" title="https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;7178783712363708475#heading-27">juejin.cn&#x2F;post&#x2F;717878…</a>))</p>
+<h2 id="使用-CDN（内容分发网络）"><a href="#使用-CDN（内容分发网络）" class="headerlink" title="使用 CDN（内容分发网络）"></a>使用 CDN（内容分发网络）</h2><p>用户与服务器的物理距离对响应时间也有影响。</p>
+<p>内容分发网络（CDN）是一组分散在不同地理位置的 web 服务器，用来给用户更高效地发送内容。典型地，选择用来发送内容的服务器是基于网络距离的衡量标准的。例如：选跳数（hop）最少的或者响应时间最快的服务器。</p>
+<h2 id="压缩响应"><a href="#压缩响应" class="headerlink" title="压缩响应"></a>压缩响应</h2><p>压缩组件通过减少 HTTP 请求产生的响应包的大小，从而降低传输时间的方式来提高性能。从 HTTP1.1 开始，Web 客户端可以通过 HTTP 请求中的 Accept-Encoding 头来标识对压缩的支持（这个请求头会列出一系列的压缩方法）</p>
+<p>如果 Web 服务器看到请求中的这个头，就会使用客户端列出的方法中的一种来压缩响应。Web 服务器通过响应中的 Content-Encoding 头来告知 Web 客户端使用哪种方法进行的压缩</p>
+<p>目前许多网站通常会压缩 HTML 文档，脚本和样式表的压缩也是值得的（包括 XML 和 JSON 在内的任何文本响应理论上都值得被压缩）。但是，图片和 PDF 文件不应该被压缩，因为它们本来已经被压缩了。</p>
+<h2 id="使用多个域名"><a href="#使用多个域名" class="headerlink" title="使用多个域名"></a>使用多个域名</h2><p>Chrome 等现代化浏览器，都会有同域名限制并发下载数的情况，不同的浏览器及版本都不一样，使用不同的域名可以最大化下载线程，但注意保持在 2~4 个域名内，以避免 DNS 查询损耗。</p>
+<h2 id="避免图片src为空"><a href="#避免图片src为空" class="headerlink" title="避免图片src为空"></a>避免图片src为空</h2><p>虽然 src 属性为空字符串，但浏览器仍然会向服务器发起一个 HTTP 请求：</p>
+<p>IE 向页面所在的目录发送请求； Safari、Chrome、Firefox 向页面本身发送请求； Opera 不执行任何操作。</p>
+<h1 id="页面渲染优化"><a href="#页面渲染优化" class="headerlink" title="页面渲染优化"></a>页面渲染优化</h1><p>Webkit 渲染引擎流程：</p>
+<ul>
+<li>处理 HTML 并构建 DOM 树</li>
+<li>处理 CSS 构建 CSS 规则树(CSSOM)</li>
+<li>DOM Tree 和 CSSOM Tree 合成一棵渲染树 Render Tree</li>
+<li>根据渲染树来布局，计算每个节点的位置</li>
+<li>调用 GPU 绘制，合成图层，显示在屏幕上</li>
+</ul>
+<h2 id="避免css阻塞"><a href="#避免css阻塞" class="headerlink" title="避免css阻塞"></a>避免css阻塞</h2><p>css影响renderTree的构建，会阻塞页面的渲染，因此应该<strong>尽早（将 CSS 放在 head 标签里）和尽快（启用 CDN 实现静态资源加载速度的优化)的</strong>将css资源加载</p>
+<h2 id="降低css选择器的复杂度"><a href="#降低css选择器的复杂度" class="headerlink" title="降低css选择器的复杂度"></a>降低css选择器的复杂度</h2><p>浏览器读取选择器，遵循的原则是从选择器的右边到左边读取。</p>
+<ul>
+<li>减少嵌套：最多不要超过三层，并且后代选择器的开销较高，慎重使用</li>
+<li>避免使用通配符，对用到的元素进行匹配即可</li>
+<li>利用继承，避免重复匹配和定义</li>
+<li>正确使用类选择器和id选择器</li>
+</ul>
+<h2 id="避免使用CSS-表达式"><a href="#避免使用CSS-表达式" class="headerlink" title="避免使用CSS 表达式"></a>避免使用CSS 表达式</h2><p>css 表达式会被频繁地计算。</p>
+<h2 id="避免js阻塞"><a href="#避免js阻塞" class="headerlink" title="避免js阻塞"></a>避免js阻塞</h2><p>js可以修改CSSOM和DOM，因此js会阻塞页面的解析和渲染，并且会等待css资源的加载。也就是说js会抢走渲染引擎的控制权。所以我们需要给js资源添加defer或者async，延迟js脚本的执行。</p>
+<h2 id="使用外链式的js和css"><a href="#使用外链式的js和css" class="headerlink" title="使用外链式的js和css"></a>使用外链式的js和css</h2><p>在现实环境中使用外部文件通常会产生较快的页面，因为 JavaScript 和 CSS 有机会被浏览器缓存起来。对于内联的情况，由于 HTML 文档通常不会被配置为可以进行缓存的，所以每次请求 HTML 文档都要下载 JavaScript 和 CSS。所以，如果 JavaScript 和 CSS 在外部文件中，浏览器可以缓存它们，HTML 文档的大小会被减少而不必增加 HTTP 请求数量。</p>
+<h2 id="使用字体图标-iconfont-代替图片图标"><a href="#使用字体图标-iconfont-代替图片图标" class="headerlink" title="使用字体图标 iconfont 代替图片图标"></a>使用字体图标 iconfont 代替图片图标</h2><ul>
+<li>图片会增加网络请求次数，从而拖慢页面加载时间</li>
+<li>iconfont可以很好的缩放并且不会添加额外的请求</li>
+</ul>
+<h2 id="首屏加载优化"><a href="#首屏加载优化" class="headerlink" title="首屏加载优化"></a>首屏加载优化</h2><ul>
+<li>使用骨架屏或者动画优化用户体验</li>
+<li>资源按需加载，首页不需要的资源延迟加载</li>
+</ul>
+<h2 id="减少重绘和回流"><a href="#减少重绘和回流" class="headerlink" title="减少重绘和回流"></a>减少重绘和回流</h2><ul>
+<li>增加多个节点使用documentFragment：不是真实dom的部分，不会引起重绘和回流</li>
+<li>用 translate 代替 top ，因为 top 会触发回流，但是translate不会。所以translate会比top节省了一个layout的时间</li>
+<li>使用 visibility 替换 display: none ，因为前者只会引起重绘，后者会引发回流（改变了布局）；opacity 代替 visiability，visiability会触发重绘（paint），但opacity不会。</li>
+<li>把 DOM 离线后修改，比如：先把 DOM 给 display:none (有一次 Reflow)，然后你修改 100 次，然后再把它显示出来</li>
+<li>不要把 DOM 结点的属性值放在一个循环里当成循环里的变量for (let i &#x3D; 0; i &lt; 1000; i++) { &#x2F;&#x2F; 获取 offsetTop 会导致回流，因为需要去获取正确的值 console.log(document.querySelector(‘.test’).style.offsetTop) } 复制代码</li>
+<li>尽量少用table布局，table布局的话，每次有单元格布局改变，都会进行整个tabel回流重绘；</li>
+<li>最好别频繁去操作DOM节点，最好把需要操作的样式，提前写成class，之后需要修改。只需要修改一次，需要修改的时候，直接修改className，做成一次性更新多条css DOM属性，一次回流重绘总比多次回流重绘要付出的成本低得多；</li>
+<li>动画实现的速度的选择，动画速度越快，回流次数越多，也可以选择使用 requestAnimationFrame</li>
+<li>每次访问DOM的偏移量属性的时候，例如获取一个元素的scrollTop、scrollLeft、scrollWidth、offsetTop、offsetLeft、offsetWidth、offsetHeight之类的属性，浏览器为了保证值的正确也会回流取得最新的值，所以如果你要多次操作，最取完做个缓存。更加不要for循环中访问DOM偏移量属性，而且使用的时候，最好定义一个变量，把要需要的值赋值进去，进行值缓存，把回流重绘的次数减少；</li>
+<li>将频繁运行的动画变为图层，图层能够阻止该节点回流影响别的元素。比如对于 video 标签，浏览器会自动将该节点变为图层。</li>
+</ul>
+<h1 id="JS中的性能优化"><a href="#JS中的性能优化" class="headerlink" title="JS中的性能优化"></a>JS中的性能优化</h1><h2 id="使用事件委托"><a href="#使用事件委托" class="headerlink" title="使用事件委托"></a>使用事件委托</h2><h2 id="防抖和节流"><a href="#防抖和节流" class="headerlink" title="防抖和节流"></a>防抖和节流</h2><h2 id="尽量不要使用JS动画"><a href="#尽量不要使用JS动画" class="headerlink" title="尽量不要使用JS动画"></a>尽量不要使用<a href="https://link.juejin.cn/?target=https://zh.javascript.info/js-animation" title="https:&#x2F;&#x2F;link.juejin.cn?target&#x3D;https%3A%2F%2Fzh.javascript.info%2Fjs-animation">JS动画</a></h2><p><a href="https://link.juejin.cn/?target=https://www.runoob.com/css3/css3-animations.html" title="https:&#x2F;&#x2F;link.juejin.cn?target&#x3D;https%3A%2F%2Fwww.runoob.com%2Fcss3%2Fcss3-animations.html">css3动画</a>和<a target="_blank" rel="noopener" href="https://juejin.cn/post/7008811592733655077" title="https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;7008811592733655077">canvas动画</a>都比JS动画性能好</p>
+<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><p>复杂的计算开启webWorker进行计算，避免页面假死</p>
+<h2 id="计算结果缓存"><a href="#计算结果缓存" class="headerlink" title="计算结果缓存"></a>计算结果缓存</h2><p>减少运算次数，比如vue中的computed</p>
+<h1 id="图片的优化"><a href="#图片的优化" class="headerlink" title="图片的优化"></a>图片的优化</h1><h2 id="雪碧图"><a href="#雪碧图" class="headerlink" title="雪碧图"></a>雪碧图</h2><p>借助减少http请求次数来进行优化</p>
+<h2 id="图片懒加载"><a href="#图片懒加载" class="headerlink" title="图片懒加载"></a>图片懒加载</h2><p>在图片即将进入可视区域的时候进行加载</p>
+<h2 id="使用CSS3代替图片"><a href="#使用CSS3代替图片" class="headerlink" title="使用CSS3代替图片"></a>使用CSS3代替图片</h2><p>有很多图片使用 CSS 效果（渐变、阴影等）就能画出来，这种情况选择 CSS3 效果更好</p>
+<h2 id="图片压缩"><a href="#图片压缩" class="headerlink" title="图片压缩"></a>图片压缩</h2><p>压缩方法有两种，一是通过在线网站进行压缩，二是通过 webpack 插件 image-webpack-loader。它是基于 <a href="https://link.juejin.cn/?target=https://link.segmentfault.com/?enc=6SFBEjb9%252FrzIZGfOUStOJw%253D%253D.%252Bf0Zw4j1CQG%252B3h9FDEUcmMrWACqiCYz06EmP4BxMagRAdgpHKY5LqwmVWYq9L%252FENvVhS9SUbVatpPn6kZMHKp%252B%252FxXnsenceQ5QcMKwcb8ks%253D" title="https:&#x2F;&#x2F;link.juejin.cn?target&#x3D;https%3A%2F%2Flink.segmentfault.com%2F%3Fenc%3D6SFBEjb9%252FrzIZGfOUStOJw%253D%253D.%252Bf0Zw4j1CQG%252B3h9FDEUcmMrWACqiCYz06EmP4BxMagRAdgpHKY5LqwmVWYq9L%252FENvVhS9SUbVatpPn6kZMHKp%252B%252FxXnsenceQ5QcMKwcb8ks%253D">imagemin</a> 这个 Node 库来实现图片压缩的。</p>
+<h2 id="使用渐进式jpeg"><a href="#使用渐进式jpeg" class="headerlink" title="使用渐进式jpeg"></a>使用渐进式jpeg</h2><p>使用渐进式jpeg，会提高用户体验 <a href="https://link.juejin.cn/?target=https://www.biaodianfu.com/progressive-jpeg.html" title="https:&#x2F;&#x2F;link.juejin.cn?target&#x3D;https%3A%2F%2Fwww.biaodianfu.com%2Fprogressive-jpeg.html">参考文章</a></p>
+<h2 id="使用-webp-格式的图片"><a href="#使用-webp-格式的图片" class="headerlink" title="使用 webp 格式的图片"></a>使用 webp 格式的图片</h2><p>webp 是一种新的图片文件格式，它提供了有损压缩和无损压缩两种方式。在相同图片质量下，webp 的体积比 png 和 jpg 更小。</p>
+<h1 id="webpack打包优化"><a href="#webpack打包优化" class="headerlink" title="webpack打包优化"></a>webpack打包优化</h1><h2 id="缩小loader-匹配范围"><a href="#缩小loader-匹配范围" class="headerlink" title="缩小loader 匹配范围"></a>缩小loader 匹配范围</h2><ul>
+<li>优化loader配置</li>
+<li>test、include、exclude三个配置项来缩⼩loader的处理范围</li>
+<li>推荐include</li>
+</ul>
+<h2 id="resolve-modules"><a href="#resolve-modules" class="headerlink" title="resolve.modules"></a>resolve.modules</h2><p>resolve.modules用于配置webpack去哪些目录下寻找第三方模块，默认是 node_modules。</p>
+<p>寻找第三方，默认是在当前项目目录下的node_modules里面去找，如果没有找到，就会去上一级目录..&#x2F;node_modules找，再没有会去..&#x2F;..&#x2F;node_modules中找，以此类推，和Node.js的模块寻找机制很类似。</p>
+<p>如果我们的第三⽅模块都安装在了项⽬根⽬录下，就可以直接指明这个路径。</p>
+<h2 id="resolve-extensions"><a href="#resolve-extensions" class="headerlink" title="resolve.extensions"></a>resolve.extensions</h2><p>resolve.extensions在导⼊语句没带⽂件后缀时，webpack会⾃动带上后缀后，去尝试查找⽂件是否存在。</p>
+<ul>
+<li>后缀尝试列表尽量的⼩</li>
+<li>导⼊语句尽量的带上后缀。</li>
+</ul>
+<p>如果想优化到极致的话，不建议用extensionx, 因为它会消耗一些性能。虽然它可以带来一些便利。</p>
+<h2 id="抽离css"><a href="#抽离css" class="headerlink" title="抽离css"></a>抽离css</h2><p>借助mini-css-extract-plugin:本插件会将 CSS 提取到单独的文件中，为每个包含 CSS 的 JS 文件创建一个 CSS 文件，并且支持 CSS 和 SourceMaps 的按需加载。。</p>
+<h2 id="代码压缩"><a href="#代码压缩" class="headerlink" title="代码压缩"></a>代码压缩</h2><h3 id="JS代码压缩"><a href="#JS代码压缩" class="headerlink" title="JS代码压缩"></a>JS代码压缩</h3><p>mode:production，使用的是terser-webpack-plugin</p>
+<h3 id="CSS代码压缩"><a href="#CSS代码压缩" class="headerlink" title="CSS代码压缩"></a>CSS代码压缩</h3><p>css-minimizer-webpack-plugin</p>
+<h3 id="Html文件代码压缩"><a href="#Html文件代码压缩" class="headerlink" title="Html文件代码压缩"></a>Html文件代码压缩</h3><p>设置了minify，实际会使用另一个插件html-minifier-terser</p>
+<h3 id="文件大小压缩"><a href="#文件大小压缩" class="headerlink" title="文件大小压缩"></a>文件大小压缩</h3><p>对文件的大小进行压缩，减少http传输过程中宽带的损耗</p>
+<h3 id="图片压缩-1"><a href="#图片压缩-1" class="headerlink" title="图片压缩"></a>图片压缩</h3><p>一般来说在打包之后，一些图片文件的大小是远远要比 js 或者 css 文件要来的大，所以图片压缩较为重要</p>
+<p>配置方法如下：</p>
+<h2 id="Tree-shaking-去除死代码"><a href="#Tree-shaking-去除死代码" class="headerlink" title="Tree shaking 去除死代码"></a>Tree shaking 去除死代码</h2><p>Tree Shaking 是一个术语，在计算机中表示消除死代码，依赖于ES Module的静态语法分析（不执行任何的代码，可以明确知道模块的依赖关系）</p>
+<p>在webpack实现Tree shaking有两种不同的方案：</p>
+<ul>
+<li>usedExports：通过标记某些函数是否被使用，之后通过Terser来进行优化的</li>
+<li>sideEffects：跳过整个模块&#x2F;文件，直接查看该文件是否有副作用</li>
+</ul>
+<p>两种不同的配置方案， 有不同的效果</p>
+<h4 id="usedExports"><a href="#usedExports" class="headerlink" title="usedExports"></a>usedExports</h4><p>配置方法也很简单，只需要将usedExports设为true</p>
+<p>使用之后，没被用上的代码在webpack打包中会加入unused harmony export mul注释，用来告知 Terser 在优化时，可以删除掉这段代码</p>
+<h4 id="sideEffects"><a href="#sideEffects" class="headerlink" title="sideEffects"></a>sideEffects</h4><p>sideEffects用于告知webpack compiler哪些模块时有副作用，配置方法是在package.json中设置sideEffects属性</p>
+<p>如果sideEffects设置为false，就是告知webpack可以安全的删除未用到的exports</p>
+<p>如果有些文件需要保留，可以设置为数组的形式</p>
+<p>上述都是关于javascript的tree shaking，css同样也能够实现tree shaking</p>
+<h4 id="css-tree-shaking"><a href="#css-tree-shaking" class="headerlink" title="css tree shaking"></a>css tree shaking</h4><p>css进行tree shaking优化可以安装PurgeCss插件</p>
+<ul>
+<li>paths：表示要检测哪些目录下的内容需要被分析，配合使用glob</li>
+<li>默认情况下，Purgecss会将我们的html标签的样式移除掉，如果我们希望保留，可以添加一个safelist的属性</li>
+</ul>
+<h2 id="babel-plugin-transform-runtime减少ES6转化ES5的冗余"><a href="#babel-plugin-transform-runtime减少ES6转化ES5的冗余" class="headerlink" title="babel-plugin-transform-runtime减少ES6转化ES5的冗余"></a>babel-plugin-transform-runtime减少ES6转化ES5的冗余</h2><p>Babel 插件会在将 ES6 代码转换成 ES5 代码时会注入一些辅助函数。在默认情况下， Babel 会在每个输出文件中内嵌这些依赖的辅助函数代码，如果多个源代码文件都依赖这些辅助函数，那么这些辅助函数的代码将会出现很多次，造成代码冗余。为了不让这些辅助函数的代码重复出现，可以在依赖它们时通过 require(‘babel-runtime&#x2F;helpers&#x2F;createClass’) 的方式导入，这样就能做到只让它们出现一次。babel-plugin-transform-runtime 插件就是用来实现这个作用的，将相关辅助函数进行替换成导入语句，从而减小 babel 编译出来的代码的文件大小。</p>
+<h2 id="代码分离"><a href="#代码分离" class="headerlink" title="代码分离"></a>代码分离</h2><p>将代码分离到不同的bundle中，之后我们可以按需加载，或者并行加载这些文件</p>
+<p>默认情况下，所有的JavaScript代码（业务代码、第三方依赖、暂时没有用到的模块）在首页全部都加载，就会影响首页的加载速度</p>
+<p>代码分离可以分出更小的bundle，以及控制资源加载优先级，提供代码的加载性能</p>
+<p>这里通过splitChunksPlugin来实现，该插件webpack已经默认安装和集成，只需要配置即可</p>
+<p>默认配置中，chunks仅仅针对于异步（async）请求，我们可以设置为initial或者all</p>
+<p>splitChunks主要属性有如下：</p>
+<ul>
+<li>Chunks，对同步代码还是异步代码进行处理</li>
+<li>minSize： 拆分包的大小, 至少为minSize，如何包的大小不超过minSize，这个包不会拆分</li>
+<li>maxSize： 将大于maxSize的包，拆分为不小于minSize的包</li>
+<li>minChunks：被引入的次数，默认是1</li>
+</ul>
+<h2 id="多线程打包提升打包速度"><a href="#多线程打包提升打包速度" class="headerlink" title="多线程打包提升打包速度"></a>多线程打包提升打包速度</h2><h1 id="vue"><a href="#vue" class="headerlink" title="vue"></a>vue</h1><ol>
+<li>v-for添加key</li>
+<li>路由懒加载</li>
+<li>第三方插件按需引入</li>
+<li>合理使用computed和watch</li>
+<li>v-for的同时避免使用v-if</li>
+<li>destory时销毁事件：比如addEventListener添加的事件、setTimeout、setInterval、bus.$on绑定的监听事件等</li>
+</ol>
+<h1 id="react"><a href="#react" class="headerlink" title="react"></a>react</h1><ol>
+<li>map循环展示添加key</li>
+<li>路由懒加载</li>
+<li>第三方插件按需引入</li>
+<li>使用shouldComponentUpdate，memo或者pureComponent避免不必要的渲染</li>
+<li>合理使用useMemo、memo、useCallback他们三个的应用场景都是缓存结果，当依赖值没有改变时避免不必要的计算或者渲染。</li>
+</ol>
+<ul>
+<li><ul>
+<li>useCallback 是针对<strong>函数</strong>进行“记忆”的，当它依赖项没有发生改变时，那么该函数的引用并不会随着组件的刷新而被重新赋值。当我们觉得一个函数不需要随着组件的更新而更新引用地址的时候，我们就可以使用 useCallback 去修饰它。</li>
+<li>React.memo 是对<strong>组件</strong>进行 “记忆”，当它接收的 props 没有发生改变的时候，那么它将返回上次渲染的结果，不会重新执行函数返回新的渲染结果。</li>
+<li>React.useMemo是针对 <strong>值计算</strong> 的一种“记忆“，当依赖项没有发生改变时，那么无需再去计算，直接使用之前的值，对于组件而言，这带来的一个好处就是，可以减少一些计算，避免一些多余的渲染。当我们遇到一些数据需要在组件内部进行计算的时候，可以考虑一下 React.useMemo</li>
+</ul>
+</li>
+</ul>
+<p>本文转自 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7272234312057978914#heading-27">https://juejin.cn/post/7272234312057978914#heading-27</a>，如有侵权，请联系删除。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Javascript/" class="category-chain-item">Javascript</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>性能优化</div>
+      <div>https://garlandqian.github.io/2024/09/24/Interview/js/性能优化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Garland Qian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/11/12/Interview/vue/vue2%E5%92%8Cvue3Diff%E7%AE%97%E6%B3%95/" title="vue2和vue3Diff算法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">vue2和vue3Diff算法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/24/Interview/js/%E6%89%8B%E5%86%99promise/" title="手写promise">
+                        <span class="hidden-mobile">手写promise</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"3762440f53e41b97123d","clientSecret":"b28e9696f3dafcb85fcff2de3964daaac9747710","repo":"GarlandQian.github.io","owner":"GarlandQian","admin":["GarlandQian"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-server-ecru.vercel.app/github_access_token"},
+          {
+            id: 'eb54f92378eca593bbadb306807a3226'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

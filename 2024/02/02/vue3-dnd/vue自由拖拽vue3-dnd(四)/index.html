@@ -1,0 +1,903 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/images/favicon.io">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Garland Qian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="vue 自由拖拽vue3-dnd(四)-Composition API提供了三个主要的钩子来将你的组件连接到 Vue3 DnD。并且提供了第四个钩子来让你在开发或测试中连接到 Vue3 DnD。  useDrag useDrop useDragLayer useDragDropManager（开发&#x2F;测试挂钩）  基本示例使用 composition api 制作一个简单的可以拖放的盒子。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue 自由拖拽vue3-dnd(四)">
+<meta property="og:url" content="https://garlandqian.github.io/2024/02/02/vue3-dnd/vue%E8%87%AA%E7%94%B1%E6%8B%96%E6%8B%BDvue3-dnd(%E5%9B%9B)/index.html">
+<meta property="og:site_name" content="Garland Qian Blog">
+<meta property="og:description" content="vue 自由拖拽vue3-dnd(四)-Composition API提供了三个主要的钩子来将你的组件连接到 Vue3 DnD。并且提供了第四个钩子来让你在开发或测试中连接到 Vue3 DnD。  useDrag useDrop useDragLayer useDragDropManager（开发&#x2F;测试挂钩）  基本示例使用 composition api 制作一个简单的可以拖放的盒子。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-02-02T03:52:08.000Z">
+<meta property="article:modified_time" content="2025-01-05T07:47:27.239Z">
+<meta property="article:author" content="Garland Qian">
+<meta property="article:tag" content="vue">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>vue 自由拖拽vue3-dnd(四) - Garland Qian Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"garlandqian.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>GarlandQian&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="vue 自由拖拽vue3-dnd(四)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-02-02 11:52" pubdate>
+          2024年2月2日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">vue 自由拖拽vue3-dnd(四)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="vue-自由拖拽vue3-dnd-四-Composition-API"><a href="#vue-自由拖拽vue3-dnd-四-Composition-API" class="headerlink" title="vue 自由拖拽vue3-dnd(四)-Composition API"></a>vue 自由拖拽vue3-dnd(四)-Composition API</h1><p>提供了三个主要的钩子来将你的组件连接到 Vue3 DnD。并且提供了第四个钩子来让你在开发或测试中连接到 Vue3 DnD。</p>
+<ul>
+<li><code>useDrag</code></li>
+<li><code>useDrop</code></li>
+<li><code>useDragLayer</code></li>
+<li><code>useDragDropManager</code>（开发&#x2F;测试挂钩）</li>
+</ul>
+<h2 id="基本示例"><a href="#基本示例" class="headerlink" title="基本示例"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/#%E5%9F%BA%E6%9C%AC%E7%A4%BA%E4%BE%8B">基本示例</a></h2><p>使用 composition api 制作一个简单的可以拖放的盒子。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">setup</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;ts&quot;</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> &#123; useDrag &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue3-dnd&#x27;</span></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> &#123; toRefs &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@vueuse/core&quot;</span>;</span><br><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">const</span> [collect, drag, dragPreview] = <span class="hljs-title function_">useDrag</span>(<span class="hljs-function">() =&gt;</span> (&#123;</span><br><span class="language-javascript">    <span class="hljs-comment">// “type”是必需的。它由放置目标的“accept”使用。</span></span><br><span class="language-javascript">    <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;BOX&#x27;</span>,</span><br><span class="language-javascript">    <span class="hljs-comment">// collect 函数传入一个“监视器”实例，用于从 DnD 中获取需要的状态信息。</span></span><br><span class="language-javascript">    <span class="hljs-attr">collect</span>: <span class="hljs-function">(<span class="hljs-params">monitor</span>) =&gt;</span> (&#123;</span><br><span class="language-javascript">      <span class="hljs-attr">isDragging</span>: monitor.<span class="hljs-title function_">isDragging</span>()</span><br><span class="language-javascript">    &#125;)</span><br><span class="language-javascript">  &#125;))</span><br><span class="language-javascript">  <span class="hljs-comment">// collect是一个Ref对象，默认取值需要从collect.value中获取,</span></span><br><span class="language-javascript">  <span class="hljs-comment">// 可以使用toRefs将Ref对象转换为可解构的对象</span></span><br><span class="language-javascript">  <span class="hljs-keyword">const</span> &#123; isDragging &#125; = <span class="hljs-title function_">toRefs</span>(collect)</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-comment">&lt;!-- 这是可选的。默认情况下，dragPreview 将附加到 dragSource --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">:ref</span>=<span class="hljs-string">&quot;dragPreview&quot;</span> <span class="hljs-attr">:style</span>=<span class="hljs-string">&quot;&#123; opacity: isDragging ? 0.5 : 1 &#125;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">role</span>=<span class="hljs-string">&quot;Handle&quot;</span> <span class="hljs-attr">:ref</span>=<span class="hljs-string">&quot;drag&quot;</span>/&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>接下来，我们需要一个放置目标。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">setup</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;ts&quot;</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> &#123;useDrop&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue3-dnd&#x27;</span></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> &#123;toRefs&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@vueuse/core&#x27;</span></span><br><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">const</span> [collect, drop] = <span class="hljs-title function_">useDrop</span>(<span class="hljs-function">() =&gt;</span> (&#123;</span><br><span class="language-javascript">    <span class="hljs-comment">// 允许放置的type(string|symbol)，或者types</span></span><br><span class="language-javascript">    <span class="hljs-attr">accept</span>: <span class="hljs-string">&#x27;BOX&#x27;</span>,</span><br><span class="language-javascript">    <span class="hljs-comment">// 传递个collect的数据</span></span><br><span class="language-javascript">    <span class="hljs-attr">collect</span>: <span class="hljs-function"><span class="hljs-params">monitor</span> =&gt;</span> (&#123;</span><br><span class="language-javascript">      <span class="hljs-attr">isOver</span>: monitor.<span class="hljs-title function_">isOver</span>(),</span><br><span class="language-javascript">      <span class="hljs-attr">canDrop</span>: monitor.<span class="hljs-title function_">canDrop</span>(),</span><br><span class="language-javascript">    &#125;),</span><br><span class="language-javascript">  &#125;))</span><br><span class="language-javascript">  <span class="hljs-keyword">const</span> &#123;canDrop, isOver&#125; = <span class="hljs-title function_">toRefs</span>(collect)</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">:ref</span>=<span class="hljs-string">&quot;drop&quot;</span> <span class="hljs-attr">:style</span>=<span class="hljs-string">&quot;&#123; backgroundColor: isOver ? &#x27;red&#x27; : &#x27;white&#x27; &#125;&quot;</span>&gt;</span><br>    &#123;&#123; canDrop ? &#x27;Release to drop&#x27; : &#x27;Drag a box here&#x27; &#125;&#125;<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>这样我们就实现了一个拖拽的盒子，你可以接着阅读单独的 API 文档，或者查看 <a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/example/">示例</a>。</p>
+<h2 id="useDrag"><a href="#useDrag" class="headerlink" title="useDrag"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag.html#usedrag">useDrag</a></h2><p><code>useDrag</code> 函数提供了一种将你的组件作为 <strong>拖拽源</strong> 连接到 DnD 的方法。它接收一个 <code>Specification</code>，你可以通过 <code>type</code> 指定拖拽的类型，通过 <code>item</code> 表示拖动源的数据，通过 <code>collect</code> 获取拖拽状态等等。</p>
+<p><code>useDrag</code> 返回了三个值：<code>collect</code> 函数的返回值，<code>dragSource</code> 和 <code>dragPreview</code> 的连接器函数。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">setup</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;ts&quot;</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> &#123; useDrag &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue3-dnd&#x27;</span></span><br><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">const</span> [collectedProps, dragSource, dragPreview] = <span class="hljs-title function_">useDrag</span>(<span class="hljs-function">() =&gt;</span> (&#123;</span><br><span class="language-javascript">    <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;BOX&#x27;</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">item</span>: &#123; <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;1&#x27;</span> &#125;,</span><br><span class="language-javascript">  &#125;))</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">&quot;collectedProps.isDragging&quot;</span> <span class="hljs-attr">:ref</span>=<span class="hljs-string">&quot;dragPreview&quot;</span>&gt;</span>dragPreview<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-else</span> <span class="hljs-attr">:ref</span>=<span class="hljs-string">&quot;dragSource&quot;</span>&gt;</span>dragSource<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag.html#%E5%8F%82%E6%95%B0">参数</a></h3><p><code>useDrag</code> 的参数可以是一个 <code>Specification</code> 对象，也可以是一个函数，返回一个 <code>Specification</code> 对象，有关 <code>Specification</code> 的详细信息，请参考 <a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag.html#specification-%E5%AF%B9%E8%B1%A1">Specification</a>。</p>
+<h3 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag.html#%E8%BF%94%E5%9B%9E%E5%80%BC">返回值</a></h3><p><code>useDrag</code> 返回一个数组，包含三个值：<code>collect</code> 函数的返回值，<code>dragSource</code> 和 <code>dragPreview</code> 的连接器函数</p>
+<ul>
+<li><code>[0] -  Collected Props</code></li>
+</ul>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">object</span>&gt;<br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>它是一个 <code>Ref</code> 对象，它的 <code>value</code> 指向 <code>collect</code> 函数的返回值，如果没有定义 <code>collect</code> 函数，它的 <code>value</code> 就是一个空对象</p>
+</li>
+<li><p><code>[1] -  DragSource Connector</code></p>
+</li>
+</ul>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ts">(<span class="hljs-attr">el</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-title class_">HTMLElement</span>&gt; | <span class="hljs-title class_">HTMLElement</span>, <span class="hljs-attr">options</span>?: <span class="hljs-title class_">DragSourceOptions</span>) =&gt; <span class="hljs-title class_">HTMLElement</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>拖拽源的连接器函数。<strong>它必须被调用</strong>，并且传入一个 <code>Ref&lt;HTMLElement&gt; | HTMLElement</code> 的可拖拽 DOM 元素；</p>
+</li>
+<li><p>第二个参数是一个 options 对象，与 Specification 对象的 options 一致</p>
+</li>
+<li><p><code>[2] - DragPreview Connector</code></p>
+</li>
+</ul>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ts">(<span class="hljs-attr">el</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-title class_">HTMLElement</span>&gt; | <span class="hljs-title class_">HTMLElement</span>, <span class="hljs-attr">options</span>?: <span class="hljs-title class_">DragPreviewOptions</span>) =&gt; <span class="hljs-title class_">HTMLElement</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>拖拽预览的连接器函数。它是可选的，<strong>默认使用 dragSource 作为预览元素</strong>，接收一个 <code>Ref&lt;HTMLElement&gt; | HTMLElement</code> 的可拖拽 DOM 元素；</p>
+</li>
+<li><p>第二个参数是一个 options 对象，与 Specification 对象的 previewOptions 一致</p>
+</li>
+</ul>
+<h3 id="Specification-对象"><a href="#Specification-对象" class="headerlink" title="Specification 对象"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag.html#specification-%E5%AF%B9%E8%B1%A1">Specification 对象</a></h3><p>在了解 <code>Specification</code> 对象的基本用法之前，你可能需要先了解一下 <a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/monitors/drag-source-monitor.html">DragSourceMonitor</a> 对象。</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th>必填</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">type</td>
+<td>是</td>
+<td align="left"><code>string | symbol</code></td>
+<td align="left">拖拽元素的类型</td>
+</tr>
+<tr>
+<td align="left">item</td>
+<td>是</td>
+<td align="left"><code>object | () =&gt; object</code></td>
+<td align="left">对象时，它是一个描述被拖动数据的纯 JavaScript 对象。<br> 这是拖放目标唯一可用的关于拖动源的信息，因此选择他们需要知道的最少数据很重要。<br> 您可能很想在此处放置一个复杂的引用，但您应该尽量避免这样做，因为它会耦合拖动源和放置目标。使用类似的东西是个好主意 <code>&#123; id &#125;</code>。<br/> 函数时，它在拖动操作开始时被触发并返回一个表示拖动操作的对象。如果返回 <code>null</code>，则取消拖动操作。</td>
+</tr>
+<tr>
+<td align="left">collect</td>
+<td>否</td>
+<td align="left"><code>(monitor: DragSourceMonitor) =&gt; CollectedProps</code></td>
+<td align="left">一个收集器的函数。它应该返回一个普通对象并成为 <code>useDrag</code> 返回值中的第一个项。</td>
+</tr>
+<tr>
+<td align="left">previewOptions</td>
+<td>否</td>
+<td align="left"><code>DragPreviewOptions</code></td>
+<td align="left">一个描述拖动预览选项的纯 JavaScript 对象。</td>
+</tr>
+<tr>
+<td align="left">options</td>
+<td>否</td>
+<td align="left"><code>DragSourceOptions</code></td>
+<td align="left">一个普通对象，可选地包含以下任何属性：<br> <code>dropEffect</code>: 非必填，在此拖动中使用的拖放效果类型。可选值：&#96;’move’</td>
+</tr>
+<tr>
+<td align="left">end</td>
+<td>否</td>
+<td align="left"><code>(draggedItem: object, monitor: DragSourceMonitor) =&gt; void</code></td>
+<td align="left">当拖动停止时，<code>end</code> 函数会被调用。<br> 你可以调用 <code>monitor.didDrop()</code> 以检查本次拖拽是否成功; <br> 如果它成功，并且放置目标通过从其 <code>drop()</code> 方法返回一个普通对象来指定放置结果，那么它将作为 <code>monitor.getDropResult()</code> 的返回值。<br> 这个方法是处理数据变化的好地方。</td>
+</tr>
+<tr>
+<td align="left">canDrag</td>
+<td>否</td>
+<td align="left"><code>boolean | (monitor: DragSourceMonitor) =&gt; boolean</code></td>
+<td align="left">你可以使用它来指定当前是否允许拖动。默认为 <code>true</code>。<br> 如果您想禁用基于某些条件的拖动，则指定一个函数会很便捷。<br> 注意：你不能在这个方法内部调用 <code>monitor.canDrag()</code>。</td>
+</tr>
+<tr>
+<td align="left">isDragging</td>
+<td>否</td>
+<td align="left"><code>boolean | (monitor: DragSourceMonitor) =&gt; boolean</code></td>
+<td align="left">默认情况下，只有发起拖动操作的拖动源才被认为是拖动的。<br> 你可以通过定义自定义一个 <code>isDragging</code> 方法来覆盖此行为。<br> 它可能会返回类似 <code>props.id === monitor.getItem().id</code>。<br> 注意：你不能在这个方法内部调用 <code>monitor.isDragging()</code>。</td>
+</tr>
+</tbody></table>
+<h2 id="useDrop"><a href="#useDrop" class="headerlink" title="useDrop"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drop.html#usedrop">useDrop</a></h2><p><code>useDrop</code> 函数提供了一种将你的组件作为 <strong>放置目标</strong> 连接到 DnD 的方法。它接收一个 <code>Specification</code>，你可以通过 <code>accpet</code> 指定允许放置的类型，通过 <code>item</code> 表示拖动源的数据，通过 <code>collect</code> 获取拖拽状态等等。</p>
+<p><code>useDrop</code> 返回了两个值：<code>collect</code> 函数的返回值，<code>dropTarget</code> 的连接器函数。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">setup</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;ts&quot;</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> &#123; useDrop &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue3-dnd&#x27;</span></span><br><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">const</span> [collectedProps, drop] = <span class="hljs-title function_">useDrop</span>(<span class="hljs-function">() =&gt;</span> (&#123;</span><br><span class="language-javascript">    <span class="hljs-attr">accept</span>: [<span class="hljs-string">&#x27;BOX&#x27;</span>]</span><br><span class="language-javascript">  &#125;))</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">:ref</span>=<span class="hljs-string">&quot;drop&quot;</span>&gt;</span>Drop Target<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="参数-1"><a href="#参数-1" class="headerlink" title="参数"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drop.html#%E5%8F%82%E6%95%B0">参数</a></h3><p><code>useDrop</code> 的参数可以是一个 <code>Specification</code> 对象，也可以是一个函数，返回一个 <code>Specification</code> 对象，有关 <code>Specification</code> 的详细信息，请参考 <a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drop.html#specification-%E5%AF%B9%E8%B1%A1">Specification</a>。</p>
+<h3 id="返回值-1"><a href="#返回值-1" class="headerlink" title="返回值"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drop.html#%E8%BF%94%E5%9B%9E%E5%80%BC">返回值</a></h3><p><code>useDrop</code> 返回一个数组，包含两个值：<code>collect</code> 函数的返回值，<code>dropTarget</code> 的连接器函数</p>
+<ul>
+<li><p><code>[0] - Collected Props</code></p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">object</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>它是一个 <code>Ref</code> 对象，它的 <code>value</code> 指向 <code>collect</code> 函数的返回值，如果没有定义 <code>collect</code> 函数，它的 <code>value</code> 就是一个空对象</li>
+</ul>
+</li>
+<li><p><code>[1] - DragTarget Connector</code></p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-title class_">Ref</span>&lt;<span class="hljs-function">(<span class="hljs-params"><span class="hljs-attr">el</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-title class_">HTMLElement</span>&gt; | <span class="hljs-title class_">HTMLElement</span></span>) =&gt;</span> <span class="hljs-title class_">HTMLElement</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>放置目标的连接器函数。<strong>它必须被调用</strong>，并且传入一个 <code>Ref&lt;HTMLElement&gt; | HTMLElement</code> 的可被拖放 DOM 元素；</p>
+</li>
+<li><p>第二个参数是一个 options 对象，与 Specification 对象的 options 一致</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Specification-对象-1"><a href="#Specification-对象-1" class="headerlink" title="Specification 对象"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drop.html#specification-%E5%AF%B9%E8%B1%A1">Specification 对象</a></h3><p>在了解 <code>Specification</code> 对象的基本用法之前，你可能需要先了解一下 <a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/monitors/drop-target-monitor.html">DropTargetMonitor</a> 对象。</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th>必填</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">accept</td>
+<td>是</td>
+<td><code>string | symbol | string[] | symbol[]</code></td>
+<td>此放置目标只会对 <a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag.html">指定类型的拖动源</a> 做出反应。</td>
+</tr>
+<tr>
+<td align="left">collect</td>
+<td>否</td>
+<td><code>(monitor: DropTargetMonitor) =&gt; CollectedProps</code></td>
+<td>一个收集器的函数。<br> 它应该返回一个普通对象并成为 <code>useDrop</code> 返回值中的第一个项。</td>
+</tr>
+<tr>
+<td align="left">options</td>
+<td>否</td>
+<td><code>object</code></td>
+<td>目前没什么用。</td>
+</tr>
+<tr>
+<td align="left">drop</td>
+<td>否</td>
+<td><code>(item: object, monitor: DropTargetMonitor) =&gt; (void | Record&lt;string, any&gt;)</code></td>
+<td>当拖拽元素放置在目标上时调用。你可以不返回任何东西，也可以返回一个普通对象。<br> 如果你返回了一个对象，它将成为 <code>dropResult</code>, 并且在 <code>drag</code> 的 <code>end</code> 方法中，可以通过 <code>monitor.getDropResult()</code> 获取到它。<br> 如果你想根据不同的放置目标执行不同的操作，这将是一个不错的选择。<br> 如果你的放置目标是嵌套的，那你可以通过 <code>monitor.didDrop()</code> 和 <code>monitor.getDropResult()</code> 来检查嵌套目标是否已经处理。 这个方法和 <code>drag</code> 的 <code>end</code> 方法，都是处理数据变化的好地方。<br> 如果 <code>canDrop()</code> 方法返回 <code>false</code>，则不会调用此方法。</td>
+</tr>
+<tr>
+<td align="left">hover</td>
+<td>否</td>
+<td><code>(item: object, monitor: DropTargetMonitor) =&gt; void</code></td>
+<td>当拖拽组件经过组件上时调用该方法。 你可以通过检查 <code>monitor.isOver(&#123; shallow: true &#125;)</code> 来检查悬停是仅发生在当前目标上还是发生在内部的嵌套目标上。 和 <code>drop()</code> 方法不同的是：即使 <code>canDrop()</code> 返回了 <code>false</code>，该方法也会被调用。 你可以通过 <code>monitor.canDrop()</code> 来确认并避免这种情况。</td>
+</tr>
+<tr>
+<td align="left">canDrop</td>
+<td>否</td>
+<td><code>(item: DragObject, monitor: DropTargetMonitor&lt;DragObject, DropResult&gt;) =&gt; boolean</code></td>
+<td>用于指定放置目标是否能够接受此拖拽组件。<br> 如果你希望总是允许，请忽略该方法。<br> 如果你想基于 <code>props</code> 或 <code>monitor.getItem()</code> 中的某些断言禁用放置，就可以使用它。<br> 注意：你不能在这个方法中调用 <code>monitor.canDrop()</code>。</td>
+</tr>
+</tbody></table>
+<h2 id="useDragLayer"><a href="#useDragLayer" class="headerlink" title="useDragLayer"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag-layer.html#usedraglayer">useDragLayer</a></h2><p><code>useDragLayer</code> 函数提供了一种将你的组件作为 <strong>拖动层</strong> 连接到 DnD 的方法。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">setup</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;ts&quot;</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> &#123; useDragLayer &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue3-dnd&#x27;</span></span><br><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">const</span> collectedProps = <span class="hljs-title function_">useDragLayer</span>(<span class="hljs-function"><span class="hljs-params">monitor</span> =&gt;</span> (&#123; </span><br><span class="language-javascript">    <span class="hljs-attr">item</span>: monitor.<span class="hljs-title function_">getItem</span>(),</span><br><span class="language-javascript">  &#125;))</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="参数-2"><a href="#参数-2" class="headerlink" title="参数"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag-layer.html#%E5%8F%82%E6%95%B0">参数</a></h3><p><code>useDragLayer</code> 的参数是一个 <code>collect</code> 收集函数，它应该返回一个普通对象，并使你在组件中使用。</p>
+<p><code>collect</code> 收集函数的参数是一个 <a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/monitors/drag-layer-monitor.html">DragLayerMonitor</a> 对象，它提供了一些监视器的方法，以便你可以获取监视器的状态。<code>collect</code> 函数的类型如下:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ts">(<span class="hljs-attr">monitor</span>: <span class="hljs-title class_">DragLayerMonitor</span>) =&gt; (<span class="hljs-built_in">void</span> | <span class="hljs-built_in">object</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="返回值-2"><a href="#返回值-2" class="headerlink" title="返回值"></a><a target="_blank" rel="noopener" href="https://www.vue3-dnd.com/guide/composition/use-drag-layer.html#%E8%BF%94%E5%9B%9E%E5%80%BC">返回值</a></h3><p><code>useDragLayer</code> 返回一个 <code>Ref</code> 对象，它是 <code>collect</code> 函数的返回值。</p>
+ <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-title class_">Collected</span> <span class="hljs-title class_">Props</span> - <span class="hljs-title class_">Ref</span> &lt;<span class="hljs-built_in">object</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>它是一个<code>Ref</code>对象，它的<code>value</code>指向<code>collect</code>函数的返回值。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/vue/" class="category-chain-item">vue</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/vue/" class="print-no-link">#vue</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>vue 自由拖拽vue3-dnd(四)</div>
+      <div>https://garlandqian.github.io/2024/02/02/vue3-dnd/vue自由拖拽vue3-dnd(四)/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Garland Qian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年2月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/02/04/vue3-dnd/vue%E8%87%AA%E7%94%B1%E6%8B%96%E6%8B%BDvue3-dnd(%E4%BA%94)/" title="vue 自由拖拽vue3-dnd(五)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">vue 自由拖拽vue3-dnd(五)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/02/02/vue3-dnd/vue%E8%87%AA%E7%94%B1%E6%8B%96%E6%8B%BDvue3-dnd(%E4%B8%89)/" title="vue自由拖拽vue3-dnd(三)">
+                        <span class="hidden-mobile">vue自由拖拽vue3-dnd(三)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"3762440f53e41b97123d","clientSecret":"b28e9696f3dafcb85fcff2de3964daaac9747710","repo":"GarlandQian.github.io","owner":"GarlandQian","admin":["GarlandQian"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-server-ecru.vercel.app/github_access_token"},
+          {
+            id: 'ba14f5447a0a3b1fb9d64e4d3f94ac4e'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

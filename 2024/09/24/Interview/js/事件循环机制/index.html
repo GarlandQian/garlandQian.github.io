@@ -1,0 +1,809 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/images/favicon.io">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Garland Qian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="事件循环机制（Event Loop）是 JavaScript 中处理异步操作的核心机制。由于 JavaScript 是单线程语言，它需要通过事件循环机制来协调同步任务和异步任务的执行，使得程序能够以非阻塞的方式处理 I&#x2F;O 操作、定时器、用户交互等异步事件。 1. JavaScript 执行模型JavaScript 的执行分为两种任务：  同步任务：直接在主线程上排队执行，只有当前任务完">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事件循环机制">
+<meta property="og:url" content="https://garlandqian.github.io/2024/09/24/Interview/js/%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="Garland Qian Blog">
+<meta property="og:description" content="事件循环机制（Event Loop）是 JavaScript 中处理异步操作的核心机制。由于 JavaScript 是单线程语言，它需要通过事件循环机制来协调同步任务和异步任务的执行，使得程序能够以非阻塞的方式处理 I&#x2F;O 操作、定时器、用户交互等异步事件。 1. JavaScript 执行模型JavaScript 的执行分为两种任务：  同步任务：直接在主线程上排队执行，只有当前任务完">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-24T00:59:53.000Z">
+<meta property="article:modified_time" content="2025-01-05T07:47:27.235Z">
+<meta property="article:author" content="Garland Qian">
+<meta property="article:tag" content="Event Loop">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>事件循环机制 - Garland Qian Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"garlandqian.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>GarlandQian&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="事件循环机制"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-24 08:59" pubdate>
+          2024年9月24日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">事件循环机制</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><strong>事件循环机制</strong>（Event Loop）是 JavaScript 中处理异步操作的核心机制。由于 JavaScript 是单线程语言，它需要通过事件循环机制来协调同步任务和异步任务的执行，使得程序能够以<strong>非阻塞</strong>的方式处理 I&#x2F;O 操作、定时器、用户交互等异步事件。</p>
+<h3 id="1-JavaScript-执行模型"><a href="#1-JavaScript-执行模型" class="headerlink" title="1. JavaScript 执行模型"></a>1. <strong>JavaScript 执行模型</strong></h3><p>JavaScript 的执行分为两种任务：</p>
+<ul>
+<li><strong>同步任务</strong>：直接在主线程上排队执行，只有当前任务完成后，才能执行下一个任务。</li>
+<li><strong>异步任务</strong>：不会立即执行，异步操作将注册回调，当异步任务完成后，回调函数会被放入任务队列中，等待主线程空闲时再执行。</li>
+</ul>
+<h3 id="2-事件循环的核心概念"><a href="#2-事件循环的核心概念" class="headerlink" title="2. 事件循环的核心概念"></a>2. <strong>事件循环的核心概念</strong></h3><p>事件循环的工作流程可以概括为以下步骤：</p>
+<ol>
+<li><strong>执行所有同步任务</strong>：首先执行全局代码中的同步任务。</li>
+<li><strong>检查异步任务队列</strong>：主线程空闲后，检查是否有异步任务完成并将其回调函数放入任务队列。</li>
+<li><strong>执行任务队列中的回调</strong>：按照顺序从任务队列中取出回调函数，并将其执行。</li>
+<li><strong>重复步骤 2 和 3</strong>：不断重复此过程，以确保事件能够持续处理。</li>
+</ol>
+<h3 id="3-任务队列类型"><a href="#3-任务队列类型" class="headerlink" title="3. 任务队列类型"></a>3. <strong>任务队列类型</strong></h3><p>任务队列（任务队列或消息队列）分为两类：</p>
+<ul>
+<li><strong>宏任务队列（Macro Task Queue）</strong>：包括整体代码（script）、<code>setTimeout</code>、<code>setInterval</code>、<code>I/O</code> 操作、事件监听等。</li>
+<li><strong>微任务队列（Micro Task Queue）</strong>：包括 <code>Promise.then()</code>、<code>process.nextTick()</code>、<code>MutationObserver</code> 等。</li>
+</ul>
+<p>事件循环在每一轮中都会优先执行所有的微任务队列，然后再执行一个宏任务。</p>
+<h3 id="4-事件循环的执行顺序"><a href="#4-事件循环的执行顺序" class="headerlink" title="4. 事件循环的执行顺序"></a>4. <strong>事件循环的执行顺序</strong></h3><p>事件循环的执行顺序非常关键，遵循以下流程：</p>
+<ol>
+<li><strong>同步代码先执行</strong>：主线程上所有同步任务先按顺序执行。</li>
+<li><strong>执行所有的微任务</strong>：当同步代码执行完后，立即执行微任务队列中的所有微任务，直到微任务队列清空。</li>
+<li><strong>执行一个宏任务</strong>：接着执行宏任务队列中的第一个宏任务。</li>
+<li><strong>循环往复</strong>：每次宏任务执行完后，都会进入微任务队列，优先执行微任务，再回到宏任务，形成循环。</li>
+</ol>
+<h3 id="5-宏任务与微任务的示例"><a href="#5-宏任务与微任务的示例" class="headerlink" title="5. 宏任务与微任务的示例"></a>5. <strong>宏任务与微任务的示例</strong></h3><p>下面通过示例展示宏任务和微任务的执行顺序：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;1&#x27;</span>); <span class="hljs-comment">// 同步任务</span><br><br><span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;2&#x27;</span>); <span class="hljs-comment">// 宏任务</span><br>&#125;, <span class="hljs-number">0</span>);<br><br><span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;3&#x27;</span>); <span class="hljs-comment">// 微任务</span><br>&#125;);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;4&#x27;</span>); <span class="hljs-comment">// 同步任务</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="执行顺序解析："><a href="#执行顺序解析：" class="headerlink" title="执行顺序解析："></a>执行顺序解析：</h4><ol>
+<li>首先执行同步任务，依次打印 <code>&#39;1&#39;</code> 和 <code>&#39;4&#39;</code>。</li>
+<li>将 <code>setTimeout</code> 回调放入宏任务队列，并将 <code>Promise.then</code> 回调放入微任务队列。</li>
+<li>执行完同步代码后，进入微任务阶段，执行微任务 <code>Promise.then</code> 回调，打印 <code>&#39;3&#39;</code>。</li>
+<li>最后进入宏任务阶段，执行 <code>setTimeout</code> 回调，打印 <code>&#39;2&#39;</code>。</li>
+</ol>
+<p>最终输出顺序为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs">1<br>4<br>3<br>2<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-示例详解：宏任务与微任务交替"><a href="#6-示例详解：宏任务与微任务交替" class="headerlink" title="6. 示例详解：宏任务与微任务交替"></a>6. <strong>示例详解：宏任务与微任务交替</strong></h3><p>为了更好地理解事件循环，可以再来看一个更复杂的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;A&#x27;</span>);<br><br><span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;B&#x27;</span>);<br>&#125;, <span class="hljs-number">0</span>);<br><br><span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;C&#x27;</span>);<br>&#125;);<br><br><span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;D&#x27;</span>);<br>&#125;, <span class="hljs-number">0</span>);<br><br><span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;E&#x27;</span>);<br>&#125;);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;F&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<h4 id="执行顺序解析：-1"><a href="#执行顺序解析：-1" class="headerlink" title="执行顺序解析："></a>执行顺序解析：</h4><ol>
+<li>同步任务依次执行，打印 <code>&#39;A&#39;</code> 和 <code>&#39;F&#39;</code>。</li>
+<li>宏任务 <code>setTimeout</code> 的回调进入宏任务队列，而 <code>Promise.then</code> 的回调进入微任务队列。</li>
+<li>同步任务执行完毕后，进入微任务阶段，执行所有微任务，依次打印 <code>&#39;C&#39;</code> 和 <code>&#39;E&#39;</code>。</li>
+<li>微任务执行完毕后，进入宏任务阶段，执行宏任务队列中的回调，依次打印 <code>&#39;B&#39;</code> 和 <code>&#39;D&#39;</code>。</li>
+</ol>
+<p>最终输出顺序为：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-variable">A</span><br><span class="hljs-variable">F</span><br><span class="hljs-built_in">C</span><br><span class="hljs-built_in">E</span><br><span class="hljs-variable">B</span><br><span class="hljs-built_in">D</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="7-浏览器中的事件循环"><a href="#7-浏览器中的事件循环" class="headerlink" title="7. 浏览器中的事件循环"></a>7. <strong>浏览器中的事件循环</strong></h3><p>在浏览器环境中，事件循环与 UI 渲染之间也存在密切联系。每次宏任务执行结束后，浏览器有机会去<strong>渲染页面</strong>，所以页面的更新通常会在宏任务结束后执行，而不会在微任务中间插入。</p>
+<h3 id="8-Node-js-中的事件循环"><a href="#8-Node-js-中的事件循环" class="headerlink" title="8. Node.js 中的事件循环"></a>8. <strong>Node.js 中的事件循环</strong></h3><p>在 Node.js 中，事件循环的机制与浏览器类似，但有一些区别。Node.js 的事件循环中有多个阶段，每个阶段都有不同类型的任务处理。例如：</p>
+<ul>
+<li><strong>timers 阶段</strong>：处理 <code>setTimeout</code> 和 <code>setInterval</code>。</li>
+<li><strong>I&#x2F;O callbacks 阶段</strong>：处理系统操作的回调。</li>
+<li><strong>poll 阶段</strong>：检索新的 I&#x2F;O 事件。</li>
+<li><strong>check 阶段</strong>：执行 <code>setImmediate()</code> 回调。</li>
+<li><strong>close 阶段</strong>：关闭回调处理。</li>
+</ul>
+<p>每个阶段结束后，都会执行微任务队列（<code>Promise.then()</code> 和 <code>process.nextTick()</code>）。</p>
+<h3 id="9-常见面试题分析"><a href="#9-常见面试题分析" class="headerlink" title="9. 常见面试题分析"></a>9. <strong>常见面试题分析</strong></h3><h4 id="问题-1："><a href="#问题-1：" class="headerlink" title="问题 1："></a>问题 1：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;start&#x27;</span>);<br><br><span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;setTimeout&#x27;</span>);<br>&#125;, <span class="hljs-number">0</span>);<br><br><span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;promise1&#x27;</span>);<br>&#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;promise2&#x27;</span>);<br>&#125;);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;end&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<p><strong>执行顺序</strong>：</p>
+<ol>
+<li>同步代码先执行，打印 <code>&#39;start&#39;</code> 和 <code>&#39;end&#39;</code>。</li>
+<li><code>setTimeout</code> 回调进入宏任务队列。</li>
+<li><code>Promise.then()</code> 回调进入微任务队列。</li>
+<li>执行微任务队列，打印 <code>&#39;promise1&#39;</code> 和 <code>&#39;promise2&#39;</code>。</li>
+<li>最后执行宏任务 <code>setTimeout</code>，打印 <code>&#39;setTimeout&#39;</code>。</li>
+</ol>
+<p><strong>输出</strong>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-string">&#x27;start&#x27;</span><br><span class="hljs-string">&#x27;end&#x27;</span><br><span class="hljs-string">&#x27;promise1&#x27;</span><br><span class="hljs-string">&#x27;promise2&#x27;</span><br><span class="hljs-string">&#x27;setTimeout&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ul>
+<li><strong>事件循环</strong>是 JavaScript 中处理异步任务的核心机制，它通过任务队列和微任务队列的配合实现非阻塞的异步操作。</li>
+<li>在每个事件循环周期中，先执行同步代码，然后执行微任务队列，最后执行宏任务队列中的一个宏任务。</li>
+<li>微任务（如 <code>Promise.then()</code>）优先于宏任务（如 <code>setTimeout()</code>）执行，这导致了在实际编写代码时，微任务通常会比宏任务先执行。</li>
+</ul>
+<h4 id="小测试"><a href="#小测试" class="headerlink" title="小测试"></a>小测试</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;script start&#x27;</span>); <br><br><span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;setTimeout&#x27;</span>); <br>&#125;, <span class="hljs-number">0</span>);<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">res,rej</span>)=&gt;</span> &#123;<br> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;promise&#x27;</span>) <br> <span class="hljs-title function_">rej</span>()<br>&#125;).<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;promise1&#x27;</span>);<br>&#125;).<span class="hljs-title function_">catch</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;).<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;promise2&#x27;</span>); <br>&#125;);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;script end&#x27;</span>); <br><br></code></pre></td></tr></table></figure>
+
+<p>让我们逐行分析这段代码的输出顺序：</p>
+<ol>
+<li><strong><code>console.log(&#39;script start&#39;);</code></strong>：立即输出 <code>&#39;script start&#39;</code>。</li>
+<li><strong><code>setTimeout(..., 0);</code></strong>：这个回调会被放入宏任务队列，等待执行。</li>
+<li><strong><code>new Promise(...);</code></strong>：<ul>
+<li>立即执行，输出 <code>&#39;promise&#39;</code>。</li>
+<li>调用 <code>rej()</code>，进入 <code>.catch()</code>。</li>
+</ul>
+</li>
+<li><strong><code>.catch(...)</code></strong>：处理拒绝状态，返回 <code>1</code>，但没有输出（只是返回值）。</li>
+<li><strong>接下来的 <code>.then(...)</code></strong>：这个 <code>then</code> 会在微任务队列中被添加。</li>
+<li><strong><code>console.log(&#39;script end&#39;);</code></strong>：立即输出 <code>&#39;script end&#39;</code>。</li>
+</ol>
+<p>接下来，微任务队列会先执行：<br>7. <strong>输出 <code>&#39;promise2&#39;</code></strong>：因为上一个 <code>then</code> 返回了一个值。</p>
+<p>最后，宏任务队列中的 <code>setTimeout</code> 回调执行：<br>8. <strong>输出 <code>&#39;setTimeout&#39;</code></strong>。</p>
+<p>所以，最终输出顺序为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-string">&#x27;script start&#x27;</span><br><span class="hljs-string">&#x27;promise&#x27;</span><br><span class="hljs-string">&#x27;script end&#x27;</span><br><span class="hljs-string">&#x27;promise2&#x27;</span><br><span class="hljs-string">&#x27;setTimeout&#x27;</span><br></code></pre></td></tr></table></figure>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Javascript/" class="category-chain-item">Javascript</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Event-Loop/" class="print-no-link">#Event Loop</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>事件循环机制</div>
+      <div>https://garlandqian.github.io/2024/09/24/Interview/js/事件循环机制/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Garland Qian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/09/24/Interview/js/%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6/" title="缓存机制">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">缓存机制</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/23/Interview/js/Esmodule%E5%92%8Ccommonjs%E5%AF%BC%E5%85%A5%E5%80%BC%E4%BF%AE%E6%94%B9/" title="Esmodule和commonjs导入值修改">
+                        <span class="hidden-mobile">Esmodule和commonjs导入值修改</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"3762440f53e41b97123d","clientSecret":"b28e9696f3dafcb85fcff2de3964daaac9747710","repo":"GarlandQian.github.io","owner":"GarlandQian","admin":["GarlandQian"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-server-ecru.vercel.app/github_access_token"},
+          {
+            id: '81f55476f0aaac31351636d3c28a23ee'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

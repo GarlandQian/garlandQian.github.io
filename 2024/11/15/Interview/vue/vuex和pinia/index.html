@@ -1,0 +1,810 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/images/favicon.io">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Garland Qian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Vuex 作为 Vue.js 的状态管理库，其核心思想是“单向数据流”和“状态变更必须是可追踪的”。为了实现这一点，Vuex 使用了严格的分离： mutation:  用途：负责同步修改 state（状态）。所有对 state 的修改必须通过 mutation 来进行，确保状态变化的可追踪性。 原则：由于它是同步的，所有的状态变化都会立刻反映到应用的视图上。 设计：你不能在 mutation 中做">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vuex和pinia">
+<meta property="og:url" content="https://garlandqian.github.io/2024/11/15/Interview/vue/vuex%E5%92%8Cpinia/index.html">
+<meta property="og:site_name" content="Garland Qian Blog">
+<meta property="og:description" content="Vuex 作为 Vue.js 的状态管理库，其核心思想是“单向数据流”和“状态变更必须是可追踪的”。为了实现这一点，Vuex 使用了严格的分离： mutation:  用途：负责同步修改 state（状态）。所有对 state 的修改必须通过 mutation 来进行，确保状态变化的可追踪性。 原则：由于它是同步的，所有的状态变化都会立刻反映到应用的视图上。 设计：你不能在 mutation 中做">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-15T06:53:58.000Z">
+<meta property="article:modified_time" content="2025-01-05T07:47:27.239Z">
+<meta property="article:author" content="Garland Qian">
+<meta property="article:tag" content="vue2">
+<meta property="article:tag" content="vue3">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>vuex和pinia - Garland Qian Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"garlandqian.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>GarlandQian&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="vuex和pinia"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-15 14:53" pubdate>
+          2024年11月15日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">vuex和pinia</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="Vuex-作为-Vue-js-的状态管理库，其核心思想是“单向数据流”和“状态变更必须是可追踪的”。为了实现这一点，Vuex-使用了严格的分离："><a href="#Vuex-作为-Vue-js-的状态管理库，其核心思想是“单向数据流”和“状态变更必须是可追踪的”。为了实现这一点，Vuex-使用了严格的分离：" class="headerlink" title="Vuex 作为 Vue.js 的状态管理库，其核心思想是“单向数据流”和“状态变更必须是可追踪的”。为了实现这一点，Vuex 使用了严格的分离："></a>Vuex 作为 Vue.js 的状态管理库，其核心思想是“单向数据流”和“状态变更必须是可追踪的”。为了实现这一点，Vuex 使用了严格的分离：</h2><ol>
+<li><p><strong><code>mutation</code></strong>:</p>
+<ul>
+<li><strong>用途</strong>：负责同步修改 state（状态）。所有对 state 的修改必须通过 <code>mutation</code> 来进行，确保状态变化的可追踪性。</li>
+<li><strong>原则</strong>：由于它是同步的，所有的状态变化都会立刻反映到应用的视图上。</li>
+<li><strong>设计</strong>：你不能在 <code>mutation</code> 中做异步操作，这确保了在 Vuex 中，状态更新是可预测的。</li>
+<li><strong>好处</strong>：<ul>
+<li><strong>可追踪性</strong>：你可以追踪每个状态的变更，尤其是在调试时非常方便。工具如 Vue DevTools 可以帮助你查看每一次状态变化，甚至回溯到哪个 <code>mutation</code> 触发了该变化。</li>
+<li><strong>严格的同步</strong>：同步状态变化意味着不会有状态变更时机的不确定性，增加了代码的稳定性。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>action</code></strong>:</p>
+<ul>
+<li><strong>用途</strong>：负责处理异步操作或其他复杂逻辑，最终可以调用 <code>mutation</code> 来修改 state。</li>
+<li><strong>原则</strong>：<code>action</code> 是异步的，你可以在其中进行 API 请求、定时器、或其他异步操作，操作完成后通过 <code>mutation</code> 更新 state。</li>
+<li><strong>设计</strong>：<code>action</code> 允许在处理异步逻辑时，有机会进行中间处理或多步操作。</li>
+<li><strong>好处</strong>：<ul>
+<li><strong>处理复杂逻辑</strong>：你可以在 <code>action</code> 中处理异步请求（如 fetch 或 axios 调用），并且操作完后进行状态更新，保证应用的响应性。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结</strong>：在 Vuex 中，<code>mutation</code> 和 <code>action</code> 的分离可以清晰地将同步和异步逻辑区分开来，尤其在大型应用中，维护性和可调试性更强。</p>
+<hr>
+<h2 id="Pinia-的设计理念：合并-mutation-和-action"><a href="#Pinia-的设计理念：合并-mutation-和-action" class="headerlink" title="Pinia 的设计理念：合并 mutation 和 action"></a><strong>Pinia 的设计理念：合并 <code>mutation</code> 和 <code>action</code></strong></h2><p>Pinia 是 Vue 3 推出的新的状态管理库，相较于 Vuex，它进行了简化设计，采用了更现代的 API 和更小的学习曲线。一个显著的改变是：Pinia 只使用 <code>action</code> 来处理状态的修改，无论是同步还是异步操作。</p>
+<ol>
+<li><p><strong><code>state</code></strong>:</p>
+<ul>
+<li>Pinia 中的 <code>state</code> 直接定义了响应式数据，和 Vuex 中的 <code>state</code> 类似。</li>
+</ul>
+</li>
+<li><p><strong><code>actions</code></strong>:</p>
+<ul>
+<li>在 Pinia 中，<code>actions</code> 被用来处理同步和异步操作。你不再需要分别定义 <code>mutation</code> 和 <code>action</code>。</li>
+<li>在 <code>action</code> 中直接修改 <code>state</code>，即使这些操作是同步的，也不需要通过 <code>mutation</code> 来包装。</li>
+<li><code>actions</code> 可以同时处理同步逻辑和异步操作，允许在其中直接改变状态。</li>
+</ul>
+</li>
+</ol>
+<p><strong>优点</strong>：</p>
+<ul>
+<li><strong>简洁性</strong>：没有 <code>mutation</code> 的概念，简化了代码。你不需要再为每个状态的修改写单独的 <code>mutation</code>，大大减少了样板代码（boilerplate code）。</li>
+<li><strong>更少的冗余</strong>：状态修改逻辑可以在 <code>actions</code> 中完成，不再需要通过 <code>mutation</code> 来单独封装同步更新，操作更加直观。</li>
+<li><strong>更灵活的 API</strong>：由于 <code>actions</code> 中既可以处理同步操作，也可以处理异步操作，逻辑组织上变得更加灵活和方便。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li><strong>状态更新不明确</strong>：由于同步和异步操作都可以直接在 <code>action</code> 中修改 <code>state</code>，这可能导致状态更新的来源不如 Vuex 那样直观。在调试时，开发者无法直接知道哪些操作是同步的，哪些是异步的，可能会造成调试上的一些困惑。</li>
+<li><strong>调试难度</strong>：在 Vuex 中，你可以很明确地看到是哪个 <code>mutation</code> 更新了状态，而 Pinia 中状态更新往往不明确，可能不如 Vuex 的调试工具直观。</li>
+<li><strong>潜在的副作用</strong>：由于 <code>actions</code> 没有严格区分同步和异步操作，可能会导致某些情况下，状态变更的时机不如预期（特别是在组件渲染时）。</li>
+</ul>
+<hr>
+<h2 id="Vuex-vs-Pinia：优缺点对比"><a href="#Vuex-vs-Pinia：优缺点对比" class="headerlink" title="Vuex vs Pinia：优缺点对比"></a><strong>Vuex vs Pinia：优缺点对比</strong></h2><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Vuex</th>
+<th>Pinia</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>状态管理</strong></td>
+<td><code>mutation</code> 和 <code>action</code> 分离，<code>mutation</code> 只负责同步修改 state</td>
+<td><code>actions</code> 处理同步和异步操作，简化代码结构</td>
+</tr>
+<tr>
+<td><strong>可预测性</strong></td>
+<td>更高，因同步操作严格限制在 <code>mutation</code> 中</td>
+<td>可能较低，因为 <code>actions</code> 同时处理同步和异步操作</td>
+</tr>
+<tr>
+<td><strong>学习曲线</strong></td>
+<td>较陡峭，需要理解 <code>mutation</code> 和 <code>action</code> 的区别</td>
+<td>较低，合并了 <code>mutation</code> 和 <code>action</code>，更简单</td>
+</tr>
+<tr>
+<td><strong>代码冗余</strong></td>
+<td>更多样板代码，尤其是在状态修改时需要分别写 <code>mutation</code></td>
+<td>减少样板代码，逻辑更紧凑</td>
+</tr>
+<tr>
+<td><strong>调试能力</strong></td>
+<td>调试时可以准确知道是哪一个 <code>mutation</code> 更新了状态</td>
+<td>调试时状态更新的来源不太明确，可能较为模糊</td>
+</tr>
+<tr>
+<td><strong>灵活性</strong></td>
+<td>高，适用于大型项目，有明确的同步&#x2F;异步逻辑区分</td>
+<td>简单直接，适合中小型项目，逻辑清晰</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><ul>
+<li><strong>Vuex</strong> 适用于大型、复杂的应用，尤其当你需要严格的同步&#x2F;异步操作区分时，它提供了更好的调试和可追踪性。它的设计哲学强调状态的变更应该是明确且可预测的，因此会稍显繁琐，需要维护更多的 <code>mutation</code> 和 <code>action</code> 逻辑。</li>
+<li><strong>Pinia</strong> 更简洁且灵活，适用于中小型项目，它减少了状态管理的复杂度，并且允许你在一个 <code>action</code> 中同时处理同步和异步操作。虽然它提供了更轻量的 API，但也牺牲了部分的可追踪性，尤其在复杂应用中可能会导致调试上的困难。</li>
+</ul>
+<p>如果你的项目是简单或者中等规模的，并且你希望减少样板代码，Pinia 是一个很好的选择；如果你的项目较大且需要更高的可维护性和可调试性，Vuex 可能更合适。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/vue/" class="category-chain-item">vue</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/vue2/" class="print-no-link">#vue2</a>
+      
+        <a href="/tags/vue3/" class="print-no-link">#vue3</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>vuex和pinia</div>
+      <div>https://garlandqian.github.io/2024/11/15/Interview/vue/vuex和pinia/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Garland Qian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/11/13/Interview/vue/pinia%E4%B8%8D%E5%85%B1%E4%BA%AB%E7%8A%B6%E6%80%81(%E9%97%AD%E5%8C%85%E6%80%9D%E6%83%B3)/" title="pinia不共享状态(闭包思想)">
+                        <span class="hidden-mobile">pinia不共享状态(闭包思想)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"3762440f53e41b97123d","clientSecret":"b28e9696f3dafcb85fcff2de3964daaac9747710","repo":"GarlandQian.github.io","owner":"GarlandQian","admin":["GarlandQian"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-server-ecru.vercel.app/github_access_token"},
+          {
+            id: 'ab6bc7ea0f5d20226ff79ca0ec30a2e0'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
